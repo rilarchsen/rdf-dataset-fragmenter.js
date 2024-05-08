@@ -1,8 +1,8 @@
-import * as readline from 'readline';
-import type { Writable } from 'stream';
-import type * as RDF from '@rdfjs/types';
-import type { IQuadSink } from './IQuadSink';
-import { ParallelFileWriter } from './ParallelFileWriter';
+import type * as RDF from "@rdfjs/types";
+import * as readline from "readline";
+import type { Writable } from "stream";
+import type { IQuadSink } from "./IQuadSink";
+import { ParallelFileWriter } from "./ParallelFileWriter";
 
 /**
  * A quad sink that writes to files using an IRI to local file system path mapping.
@@ -41,7 +41,7 @@ export class QuadSinkFile implements IQuadSink {
   protected getFilePath(iri: string): string {
     // Find base path from the first matching baseIRI
     let path: string | undefined;
-    for (const [ baseIRI, basePath ] of Object.entries(this.iriToPath)) {
+    for (const [baseIRI, basePath] of Object.entries(this.iriToPath)) {
       if (iri.startsWith(baseIRI)) {
         path = basePath + iri.slice(baseIRI.length);
         break;
@@ -53,8 +53,11 @@ export class QuadSinkFile implements IQuadSink {
       throw new Error(`No IRI mapping found for ${iri}`);
     }
 
+    // Remove localhost:3000
+    path = path.replace("localhost:3000/", "");
+
     // Escape illegal directory names
-    path = path.replace(/[*|"<>?:]/ug, '_');
+    path = path.replace(/[*|"<>?:]/gu, "_");
 
     // Add file extension if we don't have one yet
     if (this.fileExtension && !/\.[a-z]$/iu.test(this.fileExtension)) {
@@ -73,7 +76,7 @@ export class QuadSinkFile implements IQuadSink {
     this.attemptLog();
 
     // Remove hash fragment
-    const posHash = iri.indexOf('#');
+    const posHash = iri.indexOf("#");
     if (posHash >= 0) {
       iri = iri.slice(0, posHash);
     }
